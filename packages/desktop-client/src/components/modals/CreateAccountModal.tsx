@@ -13,6 +13,7 @@ import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 
 import { send } from 'loot-core/platform/client/fetch';
+import { type SyncServerTinkAccount } from 'loot-core/types/models';
 
 import { useAuth } from '@desktop-client/auth/AuthProvider';
 import { Permissions } from '@desktop-client/auth/types';
@@ -29,6 +30,7 @@ import { useGoCardlessStatus } from '@desktop-client/hooks/useGoCardlessStatus';
 import { usePluggyAiStatus } from '@desktop-client/hooks/usePluggyAiStatus';
 import { useSimpleFinStatus } from '@desktop-client/hooks/useSimpleFinStatus';
 import { useSyncServerStatus } from '@desktop-client/hooks/useSyncServerStatus';
+import { useTinkStatus } from '@desktop-client/hooks/useTinkStatus';
 import {
   type Modal as ModalType,
   pushModal,
@@ -55,6 +57,9 @@ export function CreateAccountModal({
     boolean | null
   >(null);
   const [isPluggyAiSetupComplete, setIsPluggyAiSetupComplete] = useState<
+    boolean | null
+  >(null);
+  const [isTinkSetupComplete, setIsTinkSetupComplete] = useState<
     boolean | null
   >(null);
   const { hasPermission } = useAuth();
@@ -258,6 +263,82 @@ export function CreateAccountModal({
     );
   };
 
+  const onConnectTink = async () => {
+    if (!isTinkSetupComplete) {
+      onTinkInit();
+      return;
+    }
+
+    try {
+      const results = await send('tink-accounts');
+      if (results.error_code) {
+        throw new Error(results.reason);
+      } else if ('error' in results) {
+        throw new Error(results.error);
+      }
+
+      const newAccounts: SyncServerTinkAccount[] = [];
+
+      for (const oldAccount of results.accounts) {
+        const newAccount: SyncServerTinkAccount = {
+          account_id: oldAccount.id,
+          name: oldAccount.name,
+          institution: oldAccount.officialName || oldAccount.name,
+          orgDomain: undefined,
+          orgId: oldAccount.id,
+          balance: oldAccount.balances.current,
+        };
+
+        newAccounts.push(newAccount);
+      }
+
+      dispatch(
+        pushModal({
+          modal: {
+            name: 'select-linked-accounts',
+            options: {
+              externalAccounts: newAccounts,
+              syncSource: 'tink',
+            },
+          },
+        }),
+      );
+    } catch (err) {
+      console.error(err);
+      addNotification({
+        notification: {
+          type: 'error',
+          title: t('Error when trying to contact Tink'),
+          message: (err as Error).message,
+          timeout: 5000,
+        },
+      });
+      dispatch(
+        pushModal({
+          modal: {
+            name: 'tink-init',
+            options: {
+              onSuccess: () => setIsTinkSetupComplete(true),
+            },
+          },
+        }),
+      );
+    }
+  };
+
+  const onTinkInit = () => {
+    dispatch(
+      pushModal({
+        modal: {
+          name: 'tink-init',
+          options: {
+            onSuccess: () => setIsTinkSetupComplete(true),
+          },
+        },
+      }),
+    );
+  };
+
   const onGoCardlessReset = () => {
     send('secret-set', {
       name: 'gocardless_secretId',
@@ -305,6 +386,25 @@ export function CreateAccountModal({
     });
   };
 
+  const onTinkReset = () => {
+    send('secret-set', {
+      name: 'tink_clientId',
+      value: null,
+    }).then(() => {
+      send('secret-set', {
+        name: 'tink_clientSecret',
+        value: null,
+      }).then(() => {
+        send('secret-set', {
+          name: 'tink_market',
+          value: null,
+        }).then(() => {
+          setIsTinkSetupComplete(false);
+        });
+      });
+    });
+  };
+
   const onCreateLocalAccount = () => {
     dispatch(pushModal({ modal: { name: 'add-local-account' } }));
   };
@@ -323,6 +423,11 @@ export function CreateAccountModal({
   useEffect(() => {
     setIsPluggyAiSetupComplete(configuredPluggyAi);
   }, [configuredPluggyAi]);
+
+  const { configuredTink } = useTinkStatus();
+  useEffect(() => {
+    setIsTinkSetupComplete(configuredTink);
+  }, [configuredTink]);
 
   let title = t('Add account');
   const [loadingSimpleFinAccounts, setLoadingSimpleFinAccounts] =
@@ -576,12 +681,76 @@ export function CreateAccountModal({
                           hundreds of banks.
                         </Trans>
                       </Text>
+
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          gap: 10,
+                          marginTop: '18px',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <ButtonWithLoading
+                          isDisabled={syncServerStatus !== 'online'}
+                          style={{
+                            padding: '10px 0',
+                            fontSize: 15,
+                            fontWeight: 600,
+                            flex: 1,
+                          }}
+                          onPress={onConnectTink}
+                        >
+                          {isTinkSetupComplete
+                            ? t('Link bank account with Tink')
+                            : t('Set up Tink for bank sync')}
+                        </ButtonWithLoading>
+                        {isTinkSetupComplete && (
+                          <DialogTrigger>
+                            <Button variant="bare" aria-label={t('Tink menu')}>
+                              <SvgDotsHorizontalTriple
+                                width={15}
+                                height={15}
+                                style={{ transform: 'rotateZ(90deg)' }}
+                              />
+                            </Button>
+
+                            <Popover>
+                              <Dialog>
+                                <Menu
+                                  onMenuSelect={item => {
+                                    if (item === 'reconfigure') {
+                                      onTinkReset();
+                                    }
+                                  }}
+                                  items={[
+                                    {
+                                      name: 'reconfigure',
+                                      text: t('Reset Tink credentials'),
+                                    },
+                                  ]}
+                                />
+                              </Dialog>
+                            </Popover>
+                          </DialogTrigger>
+                        )}
+                      </View>
+                      <Text style={{ lineHeight: '1.4em', fontSize: 15 }}>
+                        <Trans>
+                          <strong>
+                            Link a <em>European</em> bank account
+                          </strong>{' '}
+                          to automatically download transactions. Tink provides
+                          reliable, up-to-date information from hundreds of
+                          banks.
+                        </Trans>
+                      </Text>
                     </>
                   )}
 
                   {(!isGoCardlessSetupComplete ||
                     !isSimpleFinSetupComplete ||
-                    !isPluggyAiSetupComplete) &&
+                    !isPluggyAiSetupComplete ||
+                    !isTinkSetupComplete) &&
                     !canSetSecrets && (
                       <Warning>
                         <Trans>
@@ -592,6 +761,7 @@ export function CreateAccountModal({
                           isGoCardlessSetupComplete ? '' : 'GoCardless',
                           isSimpleFinSetupComplete ? '' : 'SimpleFIN',
                           isPluggyAiSetupComplete ? '' : 'Pluggy.ai',
+                          isTinkSetupComplete ? '' : t('Tink'),
                         ]
                           .filter(Boolean)
                           .join(' or ')}
