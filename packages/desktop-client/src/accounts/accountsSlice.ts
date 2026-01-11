@@ -10,6 +10,7 @@ import {
   type TransactionEntity,
   type SyncServerSimpleFinAccount,
   type SyncServerPluggyAiAccount,
+  type SyncServerTinkAccount,
   type CategoryEntity,
 } from 'loot-core/types/models';
 
@@ -304,6 +305,28 @@ export const linkAccountPluggyAi = createAppAsyncThunk(
     { dispatch },
   ) => {
     await send('pluggyai-accounts-link', {
+      externalAccount,
+      upgradingId,
+      offBudget,
+    });
+    dispatch(markPayeesDirty());
+    dispatch(markAccountsDirty());
+  },
+);
+
+type LinkAccountTinkPayload = {
+  externalAccount: SyncServerTinkAccount;
+  upgradingId?: AccountEntity['id'];
+  offBudget?: boolean;
+};
+
+export const linkAccountTink = createAppAsyncThunk(
+  `${sliceName}/linkAccountTink`,
+  async (
+    { externalAccount, upgradingId, offBudget }: LinkAccountTinkPayload,
+    { dispatch },
+  ) => {
+    await send('tink-accounts-link', {
       externalAccount,
       upgradingId,
       offBudget,
