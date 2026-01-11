@@ -57,6 +57,7 @@ export type AccountHandlers = {
   'gocardless-status': typeof goCardlessStatus;
   'simplefin-status': typeof simpleFinStatus;
   'pluggyai-status': typeof pluggyAiStatus;
+  'tink-status': typeof tinkStatus;
   'simplefin-accounts': typeof simpleFinAccounts;
   'pluggyai-accounts': typeof pluggyAiAccounts;
   'gocardless-get-banks': typeof getGoCardlessBanks;
@@ -688,6 +689,27 @@ async function pluggyAiStatus() {
   );
 }
 
+async function tinkStatus() {
+  const userToken = await asyncStorage.getItem('user-token');
+
+  if (!userToken) {
+    return { error: 'unauthorized' };
+  }
+
+  const serverConfig = getServer();
+  if (!serverConfig) {
+    throw new Error('Failed to get server config.');
+  }
+
+  return post(
+    serverConfig.TINK_SERVER + '/status',
+    {},
+    {
+      'X-ACTUAL-TOKEN': userToken,
+    },
+  );
+}
+
 async function simpleFinAccounts() {
   const userToken = await asyncStorage.getItem('user-token');
 
@@ -1231,6 +1253,7 @@ app.method('gocardless-poll-web-token-stop', stopGoCardlessWebTokenPolling);
 app.method('gocardless-status', goCardlessStatus);
 app.method('simplefin-status', simpleFinStatus);
 app.method('pluggyai-status', pluggyAiStatus);
+app.method('tink-status', tinkStatus);
 app.method('simplefin-accounts', simpleFinAccounts);
 app.method('pluggyai-accounts', pluggyAiAccounts);
 app.method('gocardless-get-banks', getGoCardlessBanks);

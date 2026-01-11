@@ -29,6 +29,7 @@ const useSyncSourceReadable = () => {
     goCardless: 'GoCardless',
     simpleFin: 'SimpleFIN',
     pluggyai: 'Pluggy.ai',
+    tink: 'Tink',
     unlinked: t('Unlinked'),
   };
 
