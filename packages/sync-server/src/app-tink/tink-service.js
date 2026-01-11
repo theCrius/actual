@@ -31,7 +31,7 @@ export const tinkService = {
 
   getAccounts: async () => {
     try {
-      const client = getTinkClient();
+      const _client = getTinkClient();
 
       // TODO: Implement actual Tink API call to fetch accounts
       // This is a stub that will be replaced with real implementation
@@ -43,9 +43,9 @@ export const tinkService = {
     }
   },
 
-  getTransactions: async (accountId, startDate) => {
+  getTransactions: async (_accountId, _startDate) => {
     try {
-      const client = getTinkClient();
+      const _client = getTinkClient();
 
       // TODO: Implement actual Tink API call to fetch transactions
       // This is a stub that will be replaced with real implementation

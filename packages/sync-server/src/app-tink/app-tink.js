@@ -1,7 +1,6 @@
 import express from 'express';
 
 import { handleError } from '../app-gocardless/util/handle-error';
-import { SecretName, secretsService } from '../services/secrets-service';
 import { requestLoggerMiddleware } from '../util/middlewares';
 
 import { tinkService } from './tink-service';
