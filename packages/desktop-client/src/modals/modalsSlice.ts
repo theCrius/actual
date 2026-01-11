@@ -110,6 +110,12 @@ export type Modal =
       };
     }
   | {
+      name: 'tink-init';
+      options: {
+        onSuccess: () => void;
+      };
+    }
+  | {
       name: 'gocardless-external-msg';
       options: {
         onMoveExternal: (arg: {

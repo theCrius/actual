@@ -64,6 +64,7 @@ import { ScheduledTransactionMenuModal } from './modals/ScheduledTransactionMenu
 import { SchedulesPageMenuModal } from './modals/SchedulesPageMenuModal';
 import { SelectLinkedAccountsModal } from './modals/SelectLinkedAccountsModal';
 import { SimpleFinInitialiseModal } from './modals/SimpleFinInitialiseModal';
+import { TinkInitialiseModal } from './modals/TinkInitialiseModal';
 import { TrackingBalanceMenuModal } from './modals/TrackingBalanceMenuModal';
 import { TrackingBudgetMenuModal } from './modals/TrackingBudgetMenuModal';
 import { TrackingBudgetMonthMenuModal } from './modals/TrackingBudgetMonthMenuModal';
@@ -175,6 +176,9 @@ export function Modals() {
 
         case 'pluggyai-init':
           return <PluggyAiInitialiseModal key={key} {...modal.options} />;
+
+        case 'tink-init':
+          return <TinkInitialiseModal key={key} {...modal.options} />;
 
         case 'gocardless-external-msg':
           return (
