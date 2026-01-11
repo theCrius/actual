@@ -8,10 +8,10 @@ This document outlines the implementation plan for integrating Tink as a new ban
 
 | Phase                         | Status         | Commits                                                    | Details                                              |
 | ----------------------------- | -------------- | ---------------------------------------------------------- | ---------------------------------------------------- |
-| Phase 1: Basic Infrastructure | ✅ Complete    | `030ea11af`, `55358b3be`                                   | Backend stubs, secrets, routing                      |
-| Phase 2: Account Linking      | 🚧 In Progress | `28f35b3a3`, `ef413131d`, `76b17e3d0`, `824785077`         | UI complete, RPC handlers complete, API pending      |
+| Phase 1: Basic Infrastructure | ✅ Complete    | `036909e44`, `c81893479`                                   | Backend stubs, secrets, routing                      |
+| Phase 2: Account Linking      | 🚧 In Progress | `c3b8dc0e5`, `a896443bf`, `a082848dc`, `1a6fbd55d`         | UI complete, RPC handlers complete, API pending      |
 | Phase 3: Transaction Sync     | ⏸️ Not Started | -                                                          | Waiting for Phase 2 API integration                  |
-| Phase 4: UI Integration       | 🚧 In Progress | `28f35b3a3`, `28ed27b0f`, `aea384523`                      | Account creation modal complete, settings page pending |
+| Phase 4: UI Integration       | 🚧 In Progress | `c3b8dc0e5`, `12769bf36`, `e406b638b`                      | Account creation modal complete, settings page pending |
 | Phase 5: Testing & Polish     | ⏸️ Not Started | -                                                          | -                                                    |
 
 **What Works Now**:
@@ -338,7 +338,7 @@ type ImportTransactionEntity = {
 
 ### Phase 1: Basic Infrastructure ✅ COMPLETED
 
-**Status**: Completed in commits `030ea11af` and `55358b3be`
+**Status**: Completed in commits `036909e44` and `c81893479`
 
 1. ✅ Create app-tink directory structure
 2. ✅ Implement secrets management for Tink credentials
@@ -356,7 +356,7 @@ type ImportTransactionEntity = {
 
 **Status**: UI & RPC infrastructure complete. API integration pending.
 
-**Commits**: `28f35b3a3`, `28ed27b0f`, `ef413131d`, `76b17e3d0`, `824785077`, `aea384523`
+**Commits**: `c3b8dc0e5`, `12769bf36`, `a896443bf`, `a082848dc`, `1a6fbd55d`, `e406b638b`
 
 1. ⏸️ Implement Tink Link authorization flow (requires Tink SDK/API integration)
 2. ✅ Create account fetching endpoint (stub implementation ready)
@@ -413,7 +413,7 @@ type ImportTransactionEntity = {
 
 **Status**: Account creation flow complete. Settings page pending.
 
-**Commits**: `28f35b3a3`, `28ed27b0f`, `aea384523`
+**Commits**: `c3b8dc0e5`, `12769bf36`, `e406b638b`
 
 1. ✅ Update banksync components
 2. ⏸️ Add Tink configuration settings page
