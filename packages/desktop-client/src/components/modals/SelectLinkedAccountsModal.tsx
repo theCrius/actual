@@ -14,12 +14,14 @@ import {
   type SyncServerGoCardlessAccount,
   type SyncServerPluggyAiAccount,
   type SyncServerSimpleFinAccount,
+  type SyncServerTinkAccount,
 } from 'loot-core/types/models';
 
 import {
   linkAccount,
   linkAccountPluggyAi,
   linkAccountSimpleFin,
+  linkAccountTink,
   unlinkAccount,
 } from '@desktop-client/accounts/accountsSlice';
 import {
@@ -74,6 +76,11 @@ export type SelectLinkedAccountsModalProps =
       requisitionId?: undefined;
       externalAccounts: SyncServerPluggyAiAccount[];
       syncSource: 'pluggyai';
+    }
+  | {
+      requisitionId?: undefined;
+      externalAccounts: SyncServerTinkAccount[];
+      syncSource: 'tink';
     };
 
 export function SelectLinkedAccountsModal({
@@ -99,6 +106,11 @@ export function SelectLinkedAccountsModal({
           return {
             syncSource: 'pluggyai',
             externalAccounts: toSort as SyncServerPluggyAiAccount[],
+          };
+        case 'tink':
+          return {
+            syncSource: 'tink',
+            externalAccounts: toSort as SyncServerTinkAccount[],
           };
         case 'goCardless':
           return {
@@ -174,6 +186,21 @@ export function SelectLinkedAccountsModal({
         } else if (propsWithSortedExternalAccounts.syncSource === 'pluggyai') {
           dispatch(
             linkAccountPluggyAi({
+              externalAccount:
+                propsWithSortedExternalAccounts.externalAccounts[
+                  externalAccountIndex
+                ],
+              upgradingId:
+                chosenLocalAccountId !== addOnBudgetAccountOption.id &&
+                chosenLocalAccountId !== addOffBudgetAccountOption.id
+                  ? chosenLocalAccountId
+                  : undefined,
+              offBudget,
+            }),
+          );
+        } else if (propsWithSortedExternalAccounts.syncSource === 'tink') {
+          dispatch(
+            linkAccountTink({
               externalAccount:
                 propsWithSortedExternalAccounts.externalAccounts[
                   externalAccountIndex
