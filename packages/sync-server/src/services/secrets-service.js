@@ -15,6 +15,9 @@ export const SecretName = {
   pluggyai_clientId: 'pluggyai_clientId',
   pluggyai_clientSecret: 'pluggyai_clientSecret',
   pluggyai_itemIds: 'pluggyai_itemIds',
+  tink_clientId: 'tink_clientId',
+  tink_clientSecret: 'tink_clientSecret',
+  tink_market: 'tink_market',
 };
 
 class SecretsDb {
