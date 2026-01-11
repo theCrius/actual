@@ -33,3 +33,12 @@ export type TinkConnection = {
   institutionName: string;
   status: string;
 };
+
+export type SyncServerTinkAccount = {
+  balance: number;
+  account_id: string;
+  institution?: string;
+  orgDomain?: string;
+  orgId?: string;
+  name: string;
+};
