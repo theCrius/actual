@@ -1,8 +1,81 @@
-# Tink Integration Plan
+# Tink Integration Plan (ABANDONED)
 
-This document outlines the implementation plan for integrating Tink as a new bank sync provider in Actual Budget.
+⚠️ **This integration has been abandoned in favor of TrueLayer**
 
-## Progress Summary
+See [truelayer-plan.md](truelayer-plan.md) for the replacement implementation.
+
+## Reason for Abandonment
+
+After research and comparison with TrueLayer, the Tink integration was abandoned due to:
+
+### 1. **Architectural Complexity**
+- Tink requires frontend SDK integration (Tink Link) for authentication
+- This breaks Actual Budget's pattern of pure backend sync integrations
+- GoCardless, SimpleFIN, and Pluggy.ai all use backend-only OAuth flows
+- Adding frontend SDK dependency increases complexity significantly
+
+### 2. **SDK-First Design**
+- Tink's recommended flow uses a JavaScript SDK that launches a hosted UI
+- Authentication happens in their embedded iframe/hosted page
+- Less control over the OAuth process compared to standard redirect flows
+- Documentation requires JavaScript to render (harder to access)
+
+### 3. **Better Alternative Available**
+- TrueLayer provides equivalent European bank coverage
+- TrueLayer uses standard OAuth 2.0 with REST API (no SDK required)
+- Developer on team has prior positive experience with TrueLayer
+- TrueLayer's architecture fits Actual Budget's existing patterns perfectly
+
+### 4. **Implementation Effort**
+- Tink: Estimated 10-14 hours (requires frontend SDK integration)
+- TrueLayer: Estimated 6-9 hours (pure backend, follows existing patterns)
+
+### 5. **Market Position**
+- Both platforms serve European markets adequately
+- TrueLayer focuses on data aggregation (our exact use case)
+- Tink focuses more on comprehensive financial management (overkill for our needs)
+
+## What Was Completed
+
+Despite the abandonment, significant foundational work was completed that can be reused for TrueLayer:
+
+### Infrastructure (50% complete)
+
+**Backend:**
+- ✅ Secrets management pattern established
+- ✅ Express routing structure defined
+- ✅ Service stub architecture
+
+**Type System:**
+- ✅ Provider type patterns defined
+- ✅ Account linking types structure
+- ✅ Type export patterns
+
+**UI Components:**
+- ✅ Initialization modal pattern (credential entry)
+- ✅ Status hook pattern (configuration check)
+- ✅ CreateAccountModal integration pattern
+- ✅ Account selection modal integration
+- ✅ Modal registration pattern
+
+**RPC Handlers:**
+- ✅ Status check handler pattern
+- ✅ Accounts fetch handler pattern
+- ✅ Account linking handler pattern
+
+**State Management:**
+- ✅ Redux thunk action pattern for account linking
+
+### Reusable Components for TrueLayer
+
+The following can be adapted by renaming "Tink" → "TrueLayer":
+- Modal component structure
+- RPC handler patterns
+- Type definitions structure
+- Secrets management approach
+- UI integration points
+
+## Original Implementation Progress Summary (Before Abandonment)
 
 **Overall Status**: 🚧 Phase 2 & 4 in progress (50% complete)
 
